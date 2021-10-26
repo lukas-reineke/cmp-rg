@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 1.0.1
+Version: 1.0.2
 
 ==============================================================================
 CONTENTS                                                              *cmp-rg*
@@ -41,6 +41,9 @@ Default: Current working directory                                           ~
 
 ==============================================================================
  6. CHANGELOG                                               *cmp-rg-changelog*
+
+1.0.2
+  * Fix ripgrep pattern for zsh
 
 1.0.1
   * Remove `sort` dependency
