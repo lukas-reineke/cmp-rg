@@ -4,7 +4,7 @@
 
 ## Dependencies
 
-You need to have `rg` and `sort` installed.
+You need to have [ripgrep](https://github.com/BurntSushi/ripgrep) installed.
 
 ## Install
 
