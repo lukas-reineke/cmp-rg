@@ -35,7 +35,7 @@ source.complete = function(self, request, callback)
 
     vim.fn.jobstart(
         string.format(
-            "rg --no-filename --no-heading --no-line-number --word-regexp --color never --only-matching %s %s%s .",
+            "rg --no-filename --no-heading --no-line-number --word-regexp --color never --only-matching %s '%s%s' .",
             additional_arguments,
             q,
             pattern
