@@ -28,30 +28,47 @@ Default: "[a-zA-Z_-]+"                                                       ~
 ------------------------------------------------------------------------------
 additional_arguments                             *cmp-rg-additional_arguments*
 
-Any additional arguments you want to pass to ripgrep.
+    Any additional arguments you want to pass to ripgrep.
 
-Default: ""                                                                  ~
+    Default: ""                                                                  ~
+
+    Example: >
+
+        { name = 'rg', opts = { additional_arguments = "--ignore-case" } }
+
 
 ------------------------------------------------------------------------------
 cwd                                                               *cmp-rg-cwd*
 
-Directory from where ripgrep will search.
+    Directory from where ripgrep will search.
 
-Default: Current working directory                                           ~
+    Default: Current working directory                                           ~
+
+    Example: >
+
+        { name = 'rg', opts = { cwd = "~" } }
 
 ------------------------------------------------------------------------------
 debounce                                                     *cmp-rg-debounce*
 
-Debounce length in milliseconds before a new ripgrep instance is launched.
+    Debounce length in milliseconds before a new ripgrep instance is launched.
 
-Default: 100                                                                 ~
+    Default: 100                                                                 ~
+
+    Example: >
+
+        { name = 'rg', opts = { debounce = 500 } }
 
 ------------------------------------------------------------------------------
 debug                                                           *cmp-rg-debug*
 
-Prints stderr output of ripgrep
+    Prints stderr output of ripgrep
 
-Default: false                                                               ~
+    Default: false                                                               ~
+
+    Example: >
+
+        { name = 'rg', opts = { debug = true } }
 
 ==============================================================================
  6. CHANGELOG                                               *cmp-rg-changelog*
