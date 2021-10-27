@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 1.0.2
+Version: 1.1.1
 
 ==============================================================================
 CONTENTS                                                              *cmp-rg*
@@ -72,6 +72,9 @@ debug                                                           *cmp-rg-debug*
 
 ==============================================================================
  6. CHANGELOG                                               *cmp-rg-changelog*
+
+1.1.1
+  * Add examples to the documentation
 
 1.1.0
   * Kill in progress ripgrep instances once a new one triggers.
