@@ -39,8 +39,27 @@ Directory from where ripgrep will search.
 
 Default: Current working directory                                           ~
 
+------------------------------------------------------------------------------
+debounce                                                     *cmp-rg-debounce*
+
+Debounce length in milliseconds before a new ripgrep instance is launched.
+
+Default: 100                                                                 ~
+
+------------------------------------------------------------------------------
+debug                                                           *cmp-rg-debug*
+
+Prints stderr output of ripgrep
+
+Default: false                                                               ~
+
 ==============================================================================
  6. CHANGELOG                                               *cmp-rg-changelog*
+
+1.1.0
+  * Kill in progress ripgrep instances once a new one triggers.
+  * Add |cmp-rg-debug| option
+  * Add |cmp-rg-debounce| option
 
 1.0.2
   * Fix ripgrep pattern for zsh

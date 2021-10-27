@@ -1,7 +1,10 @@
 local source = {}
 
 source.new = function()
-    return setmetatable({}, { __index = source })
+    return setmetatable({
+        running_job_id = 0,
+        timer = vim.loop.new_timer(),
+    }, { __index = source })
 end
 
 source.complete = function(self, request, callback)
@@ -22,7 +25,7 @@ source.complete = function(self, request, callback)
             callback { items = items, isIncomplete = true }
         end
 
-        if event == "stderr" then
+        if event == "stderr" and request.option.debug then
             vim.cmd "echohl Error"
             vim.cmd('echomsg "' .. table.concat(data, "") .. '"')
             vim.cmd "echohl None"
@@ -33,19 +36,27 @@ source.complete = function(self, request, callback)
         end
     end
 
-    vim.fn.jobstart(
-        string.format(
-            "rg --no-filename --no-heading --no-line-number --word-regexp --color never --only-matching %s '%s%s' .",
-            additional_arguments,
-            q,
-            pattern
-        ),
-        {
-            on_stderr = on_event,
-            on_stdout = on_event,
-            on_exit = on_event,
-            cwd = request.option.cwd or vim.fn.getcwd(),
-        }
+    self.timer:stop()
+    self.timer:start(
+        request.option.debounce or 100,
+        0,
+        vim.schedule_wrap(function()
+            vim.fn.jobstop(self.running_job_id)
+            self.running_job_id = vim.fn.jobstart(
+                string.format(
+                    "rg --no-filename --no-heading --no-line-number --word-regexp --color never --only-matching %s '%s%s' .",
+                    additional_arguments,
+                    q,
+                    pattern
+                ),
+                {
+                    on_stderr = on_event,
+                    on_stdout = on_event,
+                    on_exit = on_event,
+                    cwd = request.option.cwd or vim.fn.getcwd(),
+                }
+            )
+        end)
     )
 end
 
