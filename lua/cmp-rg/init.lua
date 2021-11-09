@@ -11,6 +11,10 @@ source.complete = function(self, request, callback)
     local q = string.sub(request.context.cursor_before_line, request.offset)
     local pattern = request.option.pattern or "[a-zA-Z_-]+"
     local additional_arguments = request.option.additional_arguments or ""
+    local quote = "'"
+    if vim.o.shell == "cmd.exe" then
+	    quote = "\""
+    end
     local seen = {}
     local items = {}
 
@@ -44,10 +48,12 @@ source.complete = function(self, request, callback)
             vim.fn.jobstop(self.running_job_id)
             self.running_job_id = vim.fn.jobstart(
                 string.format(
-                    "rg --no-filename --no-heading --no-line-number --word-regexp --color never --only-matching %s '%s%s' .",
+                    "rg --no-filename --no-heading --no-line-number --word-regexp --color never --only-matching %s %s%s%s%s .",
                     additional_arguments,
+                    quote,
                     q,
-                    pattern
+                    pattern,
+                    quote
                 ),
                 {
                     on_stderr = on_event,
