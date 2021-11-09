@@ -13,7 +13,7 @@ source.complete = function(self, request, callback)
     local additional_arguments = request.option.additional_arguments or ""
     local quote = "'"
     if vim.o.shell == "cmd.exe" then
-	    quote = "\""
+        quote = '"'
     end
     local seen = {}
     local items = {}
