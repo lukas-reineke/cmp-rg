@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 1.1.1
+Version: 1.1.2
 
 ==============================================================================
 CONTENTS                                                              *cmp-rg*
@@ -30,7 +30,7 @@ additional_arguments                             *cmp-rg-additional_arguments*
 
     Any additional arguments you want to pass to ripgrep.
 
-    Default: ""                                                                  ~
+    Default: ""                                                              ~
 
     Example: >
 
@@ -42,7 +42,7 @@ cwd                                                               *cmp-rg-cwd*
 
     Directory from where ripgrep will search.
 
-    Default: Current working directory                                           ~
+    Default: Current working directory                                       ~
 
     Example: >
 
@@ -53,7 +53,7 @@ debounce                                                     *cmp-rg-debounce*
 
     Debounce length in milliseconds before a new ripgrep instance is launched.
 
-    Default: 100                                                                 ~
+    Default: 100                                                             ~
 
     Example: >
 
@@ -64,7 +64,7 @@ debug                                                           *cmp-rg-debug*
 
     Prints stderr output of ripgrep
 
-    Default: false                                                               ~
+    Default: false                                                           ~
 
     Example: >
 
@@ -72,6 +72,9 @@ debug                                                           *cmp-rg-debug*
 
 ==============================================================================
  6. CHANGELOG                                               *cmp-rg-changelog*
+
+1.1.2
+  * Fix quotes for windows
 
 1.1.1
   * Add examples to the documentation
