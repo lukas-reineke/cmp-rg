@@ -2,18 +2,15 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 1.1.2
+Version: 1.1.3
 
 ==============================================================================
 CONTENTS                                                              *cmp-rg*
 
   1. Options                               |cmp-rg-options|
-  2. Highlights                            |cmp-rg-highlights|
-  3. Setup                                 |cmp-rg-setup|
-  4. Variables                             |cmp-rg-variables|
-  5. Commands                              |cmp-rg-commands|
-  6. Changelog                             |cmp-rg-changelog|
-  7. License                               |cmp-rg-license|
+  2. Setup                                 |cmp-rg-setup|
+  3. Changelog                             |cmp-rg-changelog|
+  4. License                               |cmp-rg-license|
 
 ==============================================================================
  1. OPTIONS                                                   *cmp-rg-options*
@@ -71,7 +68,21 @@ debug                                                           *cmp-rg-debug*
         { name = 'rg', opts = { debug = true } }
 
 ==============================================================================
- 6. CHANGELOG                                               *cmp-rg-changelog*
+ 2. SETUP                                                       *cmp-rg-setup*
+
+    Add `rg` to your cmp sources
+    >
+        require'cmp'.setup {
+            sources = {
+                { name = 'rg' }
+            }
+        }
+
+==============================================================================
+ 3. CHANGELOG                                               *cmp-rg-changelog*
+
+1.1.3
+  * Fix documentation
 
 1.1.2
   * Fix quotes for windows
@@ -94,7 +105,7 @@ debug                                                           *cmp-rg-debug*
   * First release
 
 ==============================================================================
- 7. LICENSE                                                   *cmp-rg-license*
+ 4. LICENSE                                                   *cmp-rg-license*
 
 The MIT Licence
 http://www.opensource.org/licenses/mit-license.php
