@@ -31,10 +31,22 @@ source.complete = function(self, request, callback)
                         local documentation = result.data.lines.text:gsub("\n", "")
                         table.insert(context, documentation)
                         if documentation_to_add > 0 then
-                            table.insert(items[#items].documentation, documentation)
+                            local d = items[#items].documentation
+                            table.insert(d, documentation)
                             documentation_to_add = documentation_to_add - 1
+
                             if documentation_to_add == 0 then
-                                table.insert(items[#items].documentation, "```")
+                                local min_indent = 1e309
+                                for i = 4, #d, 1 do
+                                    if d[i] ~= "" then
+                                        local _, indent = string.find(d[i], "^%s+")
+                                        min_indent = math.min(min_indent, indent or 0)
+                                    end
+                                end
+                                for i = 4, #d, 1 do
+                                    d[i] = d[i]:sub(min_indent)
+                                end
+                                table.insert(d, "```")
                             end
                         end
                     elseif result.type == "match" then
