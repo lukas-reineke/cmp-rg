@@ -11,19 +11,51 @@ source.complete = function(self, request, callback)
     local q = string.sub(request.context.cursor_before_line, request.offset)
     local pattern = request.option.pattern or "[a-zA-Z_-]+"
     local additional_arguments = request.option.additional_arguments or ""
+    local context_before = request.option.context_before or 1
+    local context_after = request.option.context_after or 3
     local quote = "'"
     if vim.o.shell == "cmd.exe" then
         quote = '"'
     end
     local seen = {}
     local items = {}
+    local context = {}
+    local documentation_to_add = 0
 
     local function on_event(job_id, data, event)
         if event == "stdout" then
-            for _, label in ipairs(data) do
-                if not seen[label] then
-                    table.insert(items, { label = label })
-                    seen[label] = true
+            for _, entry in ipairs(data) do
+                if entry ~= "" then
+                    local result = vim.fn.json_decode(entry)
+                    if result.type == "context" then
+                        local documentation = result.data.lines.text:gsub("\n", "")
+                        table.insert(context, documentation)
+                        if documentation_to_add > 0 then
+                            table.insert(items[#items].documentation, documentation)
+                            documentation_to_add = documentation_to_add - 1
+                            if documentation_to_add == 0 then
+                                table.insert(items[#items].documentation, "```")
+                            end
+                        end
+                    elseif result.type == "match" then
+                        local label = result.data.submatches[1].match.text
+                        if label and not seen[label] then
+                            local documentation = { result.data.path.text, "", "```" }
+                            for i = context_before, 0, -1 do
+                                table.insert(documentation, context[i])
+                            end
+                            local match_line = result.data.lines.text:gsub("\n", "") .. "  <--"
+                            table.insert(documentation, match_line)
+                            table.insert(items, {
+                                label = label,
+                                documentation = documentation,
+                            })
+                            documentation_to_add = context_after
+                            seen[label] = true
+                        end
+                    elseif result.type == "end" then
+                        context = {}
+                    end
                 end
             end
             callback { items = items, isIncomplete = true }
@@ -48,7 +80,9 @@ source.complete = function(self, request, callback)
             vim.fn.jobstop(self.running_job_id)
             self.running_job_id = vim.fn.jobstart(
                 string.format(
-                    "rg --no-filename --no-heading --no-line-number --word-regexp --color never --only-matching %s %s%s%s%s .",
+                    "rg --heading --json --word-regexp -B %d -A %d --color never %s %s%s%s%s .",
+                    context_before,
+                    context_after,
                     additional_arguments,
                     quote,
                     q,

@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 1.2.0
+Version: 1.3.0
 
 ==============================================================================
 CONTENTS                                                              *cmp-rg*
@@ -57,6 +57,30 @@ debounce                                                     *cmp-rg-debounce*
         { name = 'rg', option = { debounce = 500 } }
 
 ------------------------------------------------------------------------------
+context_before                                         *cmp-rg-context_before*
+
+    How many lines before the match will be displayed in the documentation
+    window
+
+    Default: 1                                                               ~
+
+    Example: >
+
+        { name = 'rg', option = { context_before = 3 } }
+
+------------------------------------------------------------------------------
+context_after                                           *cmp-rg-context_after*
+
+    How many lines after the match will be displayed in the documentation
+    window
+
+    Default: 3                                                               ~
+
+    Example: >
+
+        { name = 'rg', option = { context_after = 5 } }
+
+------------------------------------------------------------------------------
 debug                                                           *cmp-rg-debug*
 
     Prints stderr output of ripgrep
@@ -80,6 +104,11 @@ debug                                                           *cmp-rg-debug*
 
 ==============================================================================
  3. CHANGELOG                                               *cmp-rg-changelog*
+
+1.3.0
+  * Add context documentation window
+  * Add |cmp-rg-context_before|
+  * Add |cmp-rg-context_after|
 
 1.2.0
   * update documentation to move from `opts` to `option`
