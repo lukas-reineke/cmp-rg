@@ -26,8 +26,11 @@ source.complete = function(self, request, callback)
         if event == "stdout" then
             for _, entry in ipairs(data) do
                 if entry ~= "" then
-                    local result = vim.fn.json_decode(entry)
-                    if result.type == "context" then
+                    local ok, result = pcall(vim.fn.json_decode, entry)
+                    if not ok or result.type == "end" then
+                        context = {}
+                        documentation_to_add = 0
+                    elseif result.type == "context" then
                         local documentation = result.data.lines.text:gsub("\n", "")
                         table.insert(context, documentation)
                         if documentation_to_add > 0 then
@@ -65,8 +68,6 @@ source.complete = function(self, request, callback)
                             documentation_to_add = context_after
                             seen[label] = true
                         end
-                    elseif result.type == "end" then
-                        context = {}
                     end
                 end
             end
