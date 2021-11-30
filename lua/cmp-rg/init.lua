@@ -26,7 +26,7 @@ source.complete = function(self, request, callback)
         if event == "stdout" then
             for _, entry in ipairs(data) do
                 if entry ~= "" then
-                    local ok, result = pcall(vim.fn.json_decode, entry)
+                    local ok, result = pcall(vim.json.decode, entry)
                     if not ok or result.type == "end" then
                         context = {}
                         documentation_to_add = 0
