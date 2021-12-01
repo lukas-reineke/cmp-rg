@@ -61,6 +61,20 @@ By default, `rg` does not search hidden files. If you want to edit hidden files 
     ...
 ```
 
+### Tip - recursion limit
+
+`rg` does not have a directory recursion limit. This means that if you start your `nvim` instance from your `~` folder (or any folder that has many subfolder layers) `rg-cmp` could considerably slow down your system. To set a recursion limit to `n`, add the flag `--max-depth n` to `additional_arguments`. Your configuration could then look like this:
+
+
+```
+    ...
+    {
+        name = 'rg',
+        option = {additional_arguments = '--max-depth 4'},
+    }
+    ...
+```
+
 ## Screenshot
 
 ![Screenshot](https://user-images.githubusercontent.com/12900252/143555260-8567fb04-eea6-4a73-a1dc-d36d4df8cb64.png)
