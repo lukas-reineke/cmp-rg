@@ -48,6 +48,19 @@ require'cmp'.setup {
 
 For more options see `:help cmp-rg`
 
+### Tip - hidden files
+
+By default, `rg` does not search hidden files. If you want to edit hidden files (dotfiles) and see the output of the `cmp-rg` completion source, you should pass the flag `--hidden` to `rg`. Your configuration could then look like this:
+
+```
+    ...
+    {
+        name = 'rg',
+        option = {additional_arguments = '--hidden'},
+    }
+    ...
+```
+
 ## Screenshot
 
 ![Screenshot](https://user-images.githubusercontent.com/12900252/143555260-8567fb04-eea6-4a73-a1dc-d36d4df8cb64.png)
