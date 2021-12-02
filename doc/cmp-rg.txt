@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 1.3.3
+Version: 1.3.4
 
 ==============================================================================
 CONTENTS                                                              *cmp-rg*
@@ -104,6 +104,9 @@ debug                                                           *cmp-rg-debug*
 
 ==============================================================================
  3. CHANGELOG                                               *cmp-rg-changelog*
+
+1.3.4
+  * ignore byte results
 
 1.3.3
   * use new cjson decode if on 0.6
