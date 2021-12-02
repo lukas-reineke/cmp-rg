@@ -32,7 +32,11 @@ source.complete = function(self, request, callback)
             for _, entry in ipairs(data) do
                 if entry ~= "" then
                     local ok, result = pcall(self.json_decode, entry)
-                    if not ok or result.type == "end" then
+                    if
+                        not ok
+                        or result.type == "end"
+                        or (vim.tbl_contains({ "context", "match" }, result.type) and not result.data.lines.text)
+                    then
                         context = {}
                         documentation_to_add = 0
                     elseif result.type == "context" then
