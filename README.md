@@ -50,4 +50,4 @@ For more options see `:help cmp-rg`
 
 ## Screenshot
 
-![Screenshot](https://user-images.githubusercontent.com/12900252/143555260-8567fb04-eea6-4a73-a1dc-d36d4df8cb64.png)
+<img width="900" src="https://user-images.githubusercontent.com/12900252/143555260-8567fb04-eea6-4a73-a1dc-d36d4df8cb64.png" alt="Screenshot" />
