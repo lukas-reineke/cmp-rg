@@ -8,8 +8,6 @@ You need to have [ripgrep](https://github.com/BurntSushi/ripgrep) installed.
 
 ## Install
 
-> Requires Neovim 0.6+
-
 Use your favourite plugin manager to install.
 
 #### Example with Packer
