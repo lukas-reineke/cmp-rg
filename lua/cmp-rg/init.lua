@@ -1,9 +1,14 @@
 local source = {}
 
 source.new = function()
+    local json_decode = vim.fn.json_decode
+    if vim.fn.has "nvim-0.6" == 1 then
+        json_decode = vim.json.decode
+    end
     return setmetatable({
         running_job_id = 0,
         timer = vim.loop.new_timer(),
+        json_decode = json_decode,
     }, { __index = source })
 end
 
@@ -26,7 +31,7 @@ source.complete = function(self, request, callback)
         if event == "stdout" then
             for _, entry in ipairs(data) do
                 if entry ~= "" then
-                    local ok, result = pcall(vim.fn.json_decode, entry)
+                    local ok, result = pcall(self.json_decode, entry)
                     if not ok or result.type == "end" then
                         context = {}
                         documentation_to_add = 0
