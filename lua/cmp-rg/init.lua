@@ -15,6 +15,7 @@ end
 source.complete = function(self, request, callback)
     local q = string.sub(request.context.cursor_before_line, request.offset)
     local pattern = request.option.pattern or "[a-zA-Z_-]+"
+    local git_check = request.option.git_check or false
     local additional_arguments = request.option.additional_arguments or ""
     local context_before = request.option.context_before or 1
     local context_after = request.option.context_after or 3
@@ -100,6 +101,14 @@ source.complete = function(self, request, callback)
         0,
         vim.schedule_wrap(function()
             vim.fn.jobstop(self.running_job_id)
+            -- if enabled skip completion if not in git project
+            if git_check then
+                local git_out = vim.fn.system('git rev-parse --is-inside-work-tree')
+                print(git_out)
+                if git_out:gsub("%s+", "") ~= "true" then
+                    return
+                end
+            end
             self.running_job_id = vim.fn.jobstart(
                 string.format(
                     "rg --heading --json --word-regexp -B %d -A %d --color never %s %s%s%s%s .",
