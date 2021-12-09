@@ -37,10 +37,13 @@ additional_arguments                             *cmp-rg-additional_arguments*
 
         { name = 'rg', option = { additional_arguments = "--hidden" } }
 <
-
     Reduce the level of recursion into directories: >
 
         { name = 'rg', option = { additional_arguments = "--max-depth 4" } }
+
+    Only run completion if in git repo:
+
+        { name = 'rg', option = { git_check = true } }
 <
 
 ------------------------------------------------------------------------------
@@ -99,6 +102,17 @@ debug                                                           *cmp-rg-debug*
     Example: >
 
         { name = 'rg', option = { debug = true } }
+
+------------------------------------------------------------------------------
+git_check                                                           *cmp-rg-git-check*
+
+    Prevent completion if not in git repo
+
+    Default: false                                                           ~
+
+    Example: >
+
+        { name = 'rg', option = { git_check = true } }
 
 ==============================================================================
  2. SETUP                                                       *cmp-rg-setup*
