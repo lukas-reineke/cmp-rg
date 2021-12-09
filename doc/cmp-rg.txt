@@ -40,8 +40,8 @@ additional_arguments                             *cmp-rg-additional_arguments*
     Reduce the level of recursion into directories: >
 
         { name = 'rg', option = { additional_arguments = "--max-depth 4" } }
-
-    Only run completion if in git repo:
+<
+    Only run completion if in git repo: >
 
         { name = 'rg', option = { git_check = true } }
 <
