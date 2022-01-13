@@ -14,7 +14,7 @@ end
 
 source.complete = function(self, request, callback)
     local q = string.sub(request.context.cursor_before_line, request.offset)
-    local pattern = request.option.pattern or '[\\w_-]+'
+    local pattern = request.option.pattern or "[\\w_-]+"
     local additional_arguments = request.option.additional_arguments or ""
     local context_before = request.option.context_before or 1
     local context_after = request.option.context_after or 3
