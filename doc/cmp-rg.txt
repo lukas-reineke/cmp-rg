@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 1.3.5
+Version: 1.3.6
 
 ==============================================================================
 CONTENTS                                                              *cmp-rg*
@@ -20,7 +20,7 @@ pattern                                                       *cmp-rg-pattern*
 
 The pattern to search for matches with ripgrep.
 
-Default: "[a-zA-Z_-]+"                                                       ~
+Default: "[\w_-]+"                                                       ~
 
 ------------------------------------------------------------------------------
 additional_arguments                             *cmp-rg-additional_arguments*
@@ -113,6 +113,9 @@ debug                                                           *cmp-rg-debug*
 
 ==============================================================================
  3. CHANGELOG                                               *cmp-rg-changelog*
+
+1.3.6
+  * Change default pattern to fix `--smart-case`
 
 1.3.5
   * Update documentation
