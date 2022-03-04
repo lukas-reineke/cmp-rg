@@ -27,7 +27,7 @@ source.complete = function(self, request, callback)
     local context = {}
     local documentation_to_add = 0
 
-    local function on_event(job_id, data, event)
+    local function on_event(_, data, event)
         if event == "stdout" then
             for _, entry in ipairs(data) do
                 if entry ~= "" then
