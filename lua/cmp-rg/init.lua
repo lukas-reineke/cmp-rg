@@ -80,6 +80,10 @@ source.complete = function(self, request, callback)
                     end
                 end
             end
+            for _, item in ipairs(items) do
+                item.documentation.kind = "markdown"
+                item.documentation.value = table.concat(item.documentation, "\n")
+            end
             callback { items = items, isIncomplete = true }
         end
 
