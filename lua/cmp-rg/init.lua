@@ -1,14 +1,16 @@
+require "cmp-rg.types"
+
+---@class Source
+---@field public running_job_id number
+---@field public json_decode fun(s: string): rg.Message
+---@field public timer any
 local source = {}
 
 source.new = function()
-    local json_decode = vim.fn.json_decode
-    if vim.fn.has "nvim-0.6" == 1 then
-        json_decode = vim.json.decode
-    end
     return setmetatable({
         running_job_id = 0,
         timer = vim.loop.new_timer(),
-        json_decode = json_decode,
+        json_decode = vim.fn.has "nvim-0.6" == 1 and vim.json.decode or vim.fn.json_decode,
     }, { __index = source })
 end
 
@@ -24,59 +26,88 @@ source.complete = function(self, request, callback)
     end
     local seen = {}
     local items = {}
-    local context = {}
-    local documentation_to_add = 0
 
     local function on_event(_, data, event)
         if event == "stdout" then
-            for _, entry in ipairs(data) do
-                if entry ~= "" then
-                    local ok, result = pcall(self.json_decode, entry)
-                    if
-                        not ok
-                        or result.type == "end"
-                        or (vim.tbl_contains({ "context", "match" }, result.type) and not result.data.lines.text)
-                    then
-                        context = {}
-                        documentation_to_add = 0
-                    elseif result.type == "context" then
-                        local documentation = result.data.lines.text:gsub("\n", "")
-                        table.insert(context, documentation)
-                        if documentation_to_add > 0 then
-                            local d = items[#items].documentation
-                            table.insert(d, documentation)
-                            documentation_to_add = documentation_to_add - 1
+            ---@type (string|rg.Message)[]
+            local messages = data
 
-                            if documentation_to_add == 0 then
-                                local min_indent = 1e309
-                                for i = 4, #d, 1 do
-                                    if d[i] ~= "" then
-                                        local _, indent = string.find(d[i], "^%s+")
-                                        min_indent = math.min(min_indent, indent or 0)
-                                    end
+            --- Get a message that has `data.lines.text`.
+            --- If message is not yet decoded, decode it and update `messages` table.
+            --- `\n` at the end of `data.lines.text` is removed.
+            ---@param index number
+            ---@return rg.Message|nil
+            local function get_message_with_lines(index)
+                if index < 1 then
+                    return nil
+                end
+                local m = messages[index]
+                if not m then
+                    return nil
+                end
+                if type(m) == "string" then
+                    local ok, decoded = pcall(self.json_decode, m)
+                    if not ok then
+                        return nil
+                    end
+                    m, messages[index] = decoded, decoded
+                end
+                if m.type ~= "match" and m.type ~= "context" then
+                    return nil
+                end
+                if not m.data.lines.text then
+                    return nil
+                end
+                m.data.lines.text = m.data.lines.text:gsub("\n", "")
+                return m
+            end
+
+            for current = 1, #data, 1 do
+                local message = get_message_with_lines(current)
+                if message and message.type == "match" then
+                    local label = message.data.submatches[1].match.text
+                    if label and not seen[label] then
+                        local path = message.data.path.text
+                        local doc_lines = { path, "", "```" }
+                        local doc_body = {}
+                        if context_before > 0 then
+                            for j = current - context_before, current - 1, 1 do
+                                local before = get_message_with_lines(j)
+                                if before then
+                                    table.insert(doc_body, before.data.lines.text)
                                 end
-                                for i = 4, #d, 1 do
-                                    d[i] = d[i]:sub(min_indent)
-                                end
-                                table.insert(d, "```")
                             end
                         end
-                    elseif result.type == "match" then
-                        local label = result.data.submatches[1].match.text
-                        if label and not seen[label] then
-                            local documentation = { result.data.path.text, "", "```" }
-                            for i = context_before, 0, -1 do
-                                table.insert(documentation, context[i])
+                        table.insert(doc_body, message.data.lines.text .. " <--")
+                        if context_after > 0 then
+                            for k = current + 1, current + context_after, 1 do
+                                local after = get_message_with_lines(k)
+                                if after then
+                                    table.insert(doc_body, after.data.lines.text)
+                                end
                             end
-                            local match_line = result.data.lines.text:gsub("\n", "") .. "  <--"
-                            table.insert(documentation, match_line)
-                            table.insert(items, {
-                                label = label,
-                                documentation = documentation,
-                            })
-                            documentation_to_add = context_after
-                            seen[label] = true
                         end
+
+                        -- shallow indent
+                        local min_indent = math.huge
+                        for _, line in ipairs(doc_body) do
+                            local _, indent = string.find(line, "^%s+")
+                            min_indent = math.min(min_indent, indent or math.huge)
+                        end
+                        for _, line in ipairs(doc_body) do
+                            table.insert(doc_lines, line:sub(min_indent))
+                        end
+
+                        table.insert(doc_lines, "```")
+                        local documentation = {
+                            value = table.concat(doc_lines, "\n"),
+                            kind = "markdown",
+                        }
+                        table.insert(items, {
+                            label = label,
+                            documentation = documentation,
+                        })
+                        seen[label] = true
                     end
                 end
             end
