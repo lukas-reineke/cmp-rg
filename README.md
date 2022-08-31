@@ -41,7 +41,11 @@ Add `rg` to your cmp sources
 ```lua
 require'cmp'.setup {
     sources = {
-        { name = 'rg' }
+        {
+          name = 'rg',
+          -- Try it when you feel cmp performance is poor
+          -- keyword_length = 3
+        }
     }
 }
 ```
