@@ -7,9 +7,18 @@ require "cmp-rg.types"
 local source = {}
 
 source.new = function()
+    local timer = vim.loop.new_timer()
+    vim.api.nvim_create_autocmd("VimLeavePre", {
+        callback = function()
+            if timer and not timer:is_closing() then
+                timer:stop()
+                timer:close()
+            end
+        end,
+    })
     return setmetatable({
         running_job_id = 0,
-        timer = vim.loop.new_timer(),
+        timer = timer,
         json_decode = vim.fn.has "nvim-0.6" == 1 and vim.json.decode or vim.fn.json_decode,
     }, { __index = source })
 end
