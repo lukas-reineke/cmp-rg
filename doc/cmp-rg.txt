@@ -104,14 +104,14 @@ debug                                                           *cmp-rg-debug*
 
     Add `rg` to your cmp sources
     >
-        require'cmp'.setup {
+        require("cmp").setup {
             sources = {
                 {
-                  name = 'rg',
-                  -- Try it when you feel cmp performance is poor
-                  -- keyword_length = 3
-                }
-            }
+                    name = "rg",
+                    -- Try it when you feel cmp performance is poor
+                    -- keyword_length = 3
+                },
+            },
         }
 
 ==============================================================================

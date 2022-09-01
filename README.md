@@ -16,11 +16,9 @@ Use your favourite plugin manager to install.
 
 ```lua
 -- init.lua
-require("packer").startup(
-    function()
-        use "lukas-reineke/cmp-rg"
-    end
-)
+require("packer").startup(function()
+    use "lukas-reineke/cmp-rg"
+end)
 ```
 
 #### Example with Plug
@@ -39,14 +37,14 @@ call plug#end()
 Add `rg` to your cmp sources
 
 ```lua
-require'cmp'.setup {
+require("cmp").setup {
     sources = {
         {
-          name = 'rg',
-          -- Try it when you feel cmp performance is poor
-          -- keyword_length = 3
-        }
-    }
+            name = "rg",
+            -- Try it when you feel cmp performance is poor
+            -- keyword_length = 3
+        },
+    },
 }
 ```
 
