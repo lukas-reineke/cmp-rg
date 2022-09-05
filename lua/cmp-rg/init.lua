@@ -35,6 +35,7 @@ source.complete = function(self, request, callback)
     end
     local seen = {}
     local items = {}
+    local chunk_size = 5
 
     local function on_event(_, data, event)
         if event == "stdout" then
@@ -120,7 +121,10 @@ source.complete = function(self, request, callback)
                     end
                 end
             end
-            callback { items = items, isIncomplete = true }
+            if #items - chunk_size >= chunk_size then
+                chunk_size = chunk_size * 2
+                callback { items = items, isIncomplete = true }
+            end
         end
 
         if event == "stderr" and request.option.debug then
