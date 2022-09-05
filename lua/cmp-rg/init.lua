@@ -7,9 +7,18 @@ require "cmp-rg.types"
 local source = {}
 
 source.new = function()
+    local timer = vim.loop.new_timer()
+    vim.api.nvim_create_autocmd("VimLeavePre", {
+        callback = function()
+            if timer and not timer:is_closing() then
+                timer:stop()
+                timer:close()
+            end
+        end,
+    })
     return setmetatable({
         running_job_id = 0,
-        timer = vim.loop.new_timer(),
+        timer = timer,
         json_decode = vim.fn.has "nvim-0.6" == 1 and vim.json.decode or vim.fn.json_decode,
     }, { __index = source })
 end
@@ -26,6 +35,7 @@ source.complete = function(self, request, callback)
     end
     local seen = {}
     local items = {}
+    local chunk_size = 5
 
     local function on_event(_, data, event)
         if event == "stdout" then
@@ -111,7 +121,10 @@ source.complete = function(self, request, callback)
                     end
                 end
             end
-            callback { items = items, isIncomplete = true }
+            if #items - chunk_size >= chunk_size then
+                chunk_size = chunk_size * 2
+                callback { items = items, isIncomplete = true }
+            end
         end
 
         if event == "stderr" and request.option.debug then
