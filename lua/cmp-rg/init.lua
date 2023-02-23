@@ -138,6 +138,11 @@ source.complete = function(self, request, callback)
         end
     end
 
+    local cwd = request.option.cwd
+    if type(request.option.cwd) == "function" then
+        cwd = request.option.cwd()
+    end
+
     self.timer:stop()
     self.timer:start(
         request.option.debounce or 100,
@@ -159,7 +164,7 @@ source.complete = function(self, request, callback)
                     on_stderr = on_event,
                     on_stdout = on_event,
                     on_exit = on_event,
-                    cwd = request.option.cwd or vim.fn.getcwd(),
+                    cwd = cwd,
                 }
             )
         end)
