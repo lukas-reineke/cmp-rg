@@ -121,6 +121,13 @@ source.complete = function(self, request, callback)
                     end
                 end
             end
+
+            if request.max_item_count ~= nil and #items >= request.max_item_count then
+                vim.fn.jobstop(self.running_job_id)
+                callback { items = items, isIncomplete = false }
+                return
+            end
+
             if #items - chunk_size >= chunk_size then
                 chunk_size = chunk_size * 2
                 callback { items = items, isIncomplete = true }
