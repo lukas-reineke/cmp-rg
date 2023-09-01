@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 1.3.8
+Version: 1.3.9
 
 ==============================================================================
 CONTENTS                                                              *cmp-rg*
