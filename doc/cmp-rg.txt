@@ -26,20 +26,20 @@ additional_arguments                             *cmp-rg-additional_arguments*
 
     Any additional arguments you want to pass to ripgrep.
 
-    Default: ""                                                              ~
+    Default: {}                                                              ~
 
     Example: >
 
-        { name = 'rg', option = { additional_arguments = "--smart-case" } }
+        { name = 'rg', option = { additional_arguments = { "--smart-case" } } }
 <
     Search in hidden files (starting with a `.`): >
 
-        { name = 'rg', option = { additional_arguments = "--hidden" } }
+        { name = 'rg', option = { additional_arguments = { "--hidden" } } }
 <
 
     Reduce the level of recursion into directories: >
 
-        { name = 'rg', option = { additional_arguments = "--max-depth 4" } }
+        { name = 'rg', option = { additional_arguments = { "--max-depth", "4" } } }
 <
 
 ------------------------------------------------------------------------------
