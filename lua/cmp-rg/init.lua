@@ -75,49 +75,51 @@ source.complete = function(self, request, callback)
             for current = 1, #data, 1 do
                 local message = get_message_with_lines(current)
                 if message and message.type == "match" then
-                    local label = message.data.submatches[1].match.text
-                    if label and not seen[label] then
-                        local path = message.data.path.text
-                        local doc_lines = { path, "", "```" }
-                        local doc_body = {}
-                        if context_before > 0 then
-                            for j = current - context_before, current - 1, 1 do
-                                local before = get_message_with_lines(j)
-                                if before then
-                                    table.insert(doc_body, before.data.lines.text)
+                    for _, submatch in ipairs(message.data.submatches) do
+                        local label = submatch.match.text
+                        if label and not seen[label] then
+                            local path = message.data.path.text
+                            local doc_lines = { path, "", "```" }
+                            local doc_body = {}
+                            if context_before > 0 then
+                                for j = current - context_before, current - 1, 1 do
+                                    local before = get_message_with_lines(j)
+                                    if before then
+                                        table.insert(doc_body, before.data.lines.text)
+                                    end
                                 end
                             end
-                        end
-                        table.insert(doc_body, message.data.lines.text .. " <--")
-                        if context_after > 0 then
-                            for k = current + 1, current + context_after, 1 do
-                                local after = get_message_with_lines(k)
-                                if after then
-                                    table.insert(doc_body, after.data.lines.text)
+                            table.insert(doc_body, message.data.lines.text .. " <--")
+                            if context_after > 0 then
+                                for k = current + 1, current + context_after, 1 do
+                                    local after = get_message_with_lines(k)
+                                    if after then
+                                        table.insert(doc_body, after.data.lines.text)
+                                    end
                                 end
                             end
-                        end
 
-                        -- shallow indent
-                        local min_indent = math.huge
-                        for _, line in ipairs(doc_body) do
-                            local _, indent = string.find(line, "^%s+")
-                            min_indent = math.min(min_indent, indent or math.huge)
-                        end
-                        for _, line in ipairs(doc_body) do
-                            table.insert(doc_lines, line:sub(min_indent))
-                        end
+                            -- shallow indent
+                            local min_indent = math.huge
+                            for _, line in ipairs(doc_body) do
+                                local _, indent = string.find(line, "^%s+")
+                                min_indent = math.min(min_indent, indent or math.huge)
+                            end
+                            for _, line in ipairs(doc_body) do
+                                table.insert(doc_lines, line:sub(min_indent))
+                            end
 
-                        table.insert(doc_lines, "```")
-                        local documentation = {
-                            value = table.concat(doc_lines, "\n"),
-                            kind = "markdown",
-                        }
-                        table.insert(items, {
-                            label = label,
-                            documentation = documentation,
-                        })
-                        seen[label] = true
+                            table.insert(doc_lines, "```")
+                            local documentation = {
+                                value = table.concat(doc_lines, "\n"),
+                                kind = "markdown",
+                            }
+                            table.insert(items, {
+                                label = label,
+                                documentation = documentation,
+                            })
+                            seen[label] = true
+                        end
                     end
                 end
             end
