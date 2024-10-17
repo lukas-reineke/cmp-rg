@@ -1,13 +1,19 @@
 require "cmp-rg.types"
 
+local Process = require "cmp-rg.process"
+local uv = vim.uv or vim.loop
+
+local function show_error(msg)
+    vim.notify("[cmp-rg] " .. msg, vim.log.levels.ERROR)
+end
+
 ---@class Source
----@field public running_job_id number
----@field public json_decode fun(s: string): rg.Message
+---@field public process table
 ---@field public timer any
 local source = {}
 
 source.new = function()
-    local timer = vim.loop.new_timer()
+    local timer = uv.new_timer()
     vim.api.nvim_create_autocmd("VimLeavePre", {
         callback = function()
             if timer and not timer:is_closing() then
@@ -17,27 +23,25 @@ source.new = function()
         end,
     })
     return setmetatable({
-        running_job_id = 0,
         timer = timer,
-        json_decode = vim.fn.has "nvim-0.6" == 1 and vim.json.decode or vim.fn.json_decode,
     }, { __index = source })
 end
 
 source.complete = function(self, request, callback)
     local q = string.sub(request.context.cursor_before_line, request.offset)
     local pattern = request.option.pattern or "[\\w_-]+"
-    local additional_arguments = request.option.additional_arguments or ""
+    local additional_arguments = request.option.additional_arguments or {}
+    if type(additional_arguments) == "string" then
+        show_error('Now additional_arguments must be an array of string')
+        additional_arguments = {}
+    end
     local context_before = request.option.context_before or 1
     local context_after = request.option.context_after or 3
-    local quote = "'"
-    if vim.o.shell == "cmd.exe" then
-        quote = '"'
-    end
     local seen = {}
     local items = {}
     local chunk_size = 5
 
-    local function on_event(_, data, event)
+    local function on_event(data, event)
         if event == "stdout" then
             ---@type (string|rg.Message)[]
             local messages = data
@@ -56,7 +60,7 @@ source.complete = function(self, request, callback)
                     return nil
                 end
                 if type(m) == "string" then
-                    local ok, decoded = pcall(self.json_decode, m)
+                    local ok, decoded = pcall(vim.json.decode, m)
                     if not ok then
                         return nil
                     end
@@ -125,7 +129,7 @@ source.complete = function(self, request, callback)
             end
 
             if request.max_item_count ~= nil and #items >= request.max_item_count then
-                vim.fn.jobstop(self.running_job_id)
+                self.process:kill()
                 callback { items = items, isIncomplete = false }
                 return
             end
@@ -137,9 +141,7 @@ source.complete = function(self, request, callback)
         end
 
         if event == "stderr" and request.option.debug then
-            vim.cmd "echohl Error"
-            vim.cmd('echomsg "' .. table.concat(data, "") .. '"')
-            vim.cmd "echohl None"
+            show_error(table.concat(data, ""))
         end
 
         if event == "exit" then
@@ -148,31 +150,30 @@ source.complete = function(self, request, callback)
     end
 
     self.timer:stop()
-    self.timer:start(
-        request.option.debounce or 100,
-        0,
-        vim.schedule_wrap(function()
-            vim.fn.jobstop(self.running_job_id)
-            self.running_job_id = vim.fn.jobstart(
-                string.format(
-                    "rg --heading --json --word-regexp -B %d -A %d --color never %s %s%s%s%s .",
-                    context_before,
-                    context_after,
-                    additional_arguments,
-                    quote,
-                    q,
-                    pattern,
-                    quote
-                ),
-                {
-                    on_stderr = on_event,
-                    on_stdout = on_event,
-                    on_exit = on_event,
-                    cwd = request.option.cwd or vim.fn.getcwd(),
-                }
-            )
-        end)
-    )
+    self.timer:start(request.option.debounce or 100, 0, function()
+        if self.process then
+            self.process:kill()
+        end
+        local args = {
+            "--heading",
+            "--json",
+            "--word-regexp",
+            "-B",
+            tostring(context_before),
+            "-A",
+            tostring(context_after),
+            "--color",
+            "never",
+        }
+        if #additional_arguments > 0 then
+            for _, v in ipairs(additional_arguments) do
+                table.insert(args, v)
+            end
+        end
+        table.insert(args,q .. pattern)
+        table.insert(args,".")
+        self.process = Process.new("rg", args, on_event, { cwd = request.option.cwd }):run()
+    end)
 end
 
 return source
