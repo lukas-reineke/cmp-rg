@@ -30,7 +30,7 @@ source.complete = function(self, request, callback)
     local context_before = request.option.context_before or 1
     local context_after = request.option.context_after or 3
     local quote = "'"
-    if vim.o.shell == "cmd.exe" then
+    if string.find(vim.o.shell, "cmd") then
         quote = '"'
     end
     local seen = {}
