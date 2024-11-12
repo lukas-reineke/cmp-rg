@@ -152,6 +152,15 @@ source.complete = function(self, request, callback)
         0,
         vim.schedule_wrap(function()
             vim.fn.jobstop(self.running_job_id)
+
+            local cwd = request.option.cwd or vim.fn.getcwd()
+            if type(cwd) == "function" then
+                cwd = cwd()
+            end
+            if cwd == nil then
+              return
+            end
+
             self.running_job_id = vim.fn.jobstart(
                 string.format(
                     "rg --heading --json --word-regexp -B %d -A %d --color never %s %s%s%s%s .",
@@ -167,7 +176,7 @@ source.complete = function(self, request, callback)
                     on_stderr = on_event,
                     on_stdout = on_event,
                     on_exit = on_event,
-                    cwd = request.option.cwd or vim.fn.getcwd(),
+                    cwd = cwd,
                 }
             )
         end)
