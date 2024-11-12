@@ -6,6 +6,8 @@ require "cmp-rg.types"
 ---@field public timer any
 local source = {}
 
+local is_cmd = string.find(vim.o.shell, "cmd") and true or false
+
 source.new = function()
     local timer = vim.loop.new_timer()
     vim.api.nvim_create_autocmd("VimLeavePre", {
@@ -29,10 +31,7 @@ source.complete = function(self, request, callback)
     local additional_arguments = request.option.additional_arguments or ""
     local context_before = request.option.context_before or 1
     local context_after = request.option.context_after or 3
-    local quote = "'"
-    if vim.o.shell == "cmd.exe" then
-        quote = '"'
-    end
+    local quote = is_cmd and '"' or "'"
     local seen = {}
     local items = {}
     local chunk_size = 5
